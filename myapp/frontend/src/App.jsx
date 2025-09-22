@@ -17,13 +17,13 @@ function App() {
   // Function to fetch all students from the backend
   const fetchStudents = async () => {
     try {
+      setError(null); // Clear previous errors
       const response = await fetch(getApiUrl("/students"));
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
       const data = await response.json();
       setStudents(data);
-      setError(null); // Clear any previous errors
     } catch (e) {
       console.error("Error fetching students:", e);
       setError("Could not fetch the list of students."); // Set a user-friendly error message
@@ -41,6 +41,7 @@ function App() {
     if (!name.trim()) return; // Do not allow adding empty names
 
     try {
+      setError(null); // Clear previous errors
       const response = await fetch(getApiUrl("/students"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
