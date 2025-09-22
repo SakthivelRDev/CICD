@@ -1,38 +1,43 @@
 import { useState, useEffect } from "react";
 
-// Get the API URL from the environment variable.
-// If it's not set (in local dev), it defaults to the localhost URL.
-const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+// In production, this will be "/api". In development, it will be undefined.
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 function App() {
   const [students, setStudents] = useState([]);
   const [name, setName] = useState("");
 
+  // Helper function to build the full API URL
+  const getApiUrl = (path) => {
+    // If API_BASE_URL is set (in production), use it. Otherwise, use localhost.
+    return API_BASE_URL ? `${API_BASE_URL}${path}` : `http://localhost:5000/api${path}`;
+  };
+
   // Function to fetch students
   const fetchStudents = () => {
-    fetch(`${apiUrl}/students`) // Use the dynamic apiUrl
+    fetch(getApiUrl("/students"))
       .then((res) => res.json())
       .then((data) => setStudents(data))
       .catch((error) => console.error("Error fetching students:", error));
   };
 
-  // Fetch students from backend on initial component load
+  // Fetch students on initial component load
   useEffect(() => {
     fetchStudents();
   }, []);
 
   // Add a new student
   const addStudent = async (e) => {
-    e.preventDefault(); // Prevent form submission from reloading the page
-    if (!name.trim()) return; // Don't add empty names
+    e.preventDefault();
+    if (!name.trim()) return;
 
-    await fetch(`${apiUrl}/students`, { // Use the dynamic apiUrl
+    await fetch(getApiUrl("/students"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name }),
     });
-    setName(""); // Clear the input box
-    fetchStudents(); // Refresh the student list
+    setName("");
+    fetchStudents();
   };
 
   return (
