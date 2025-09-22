@@ -23,6 +23,10 @@ def get_students():
     cursor.execute("SELECT * FROM students")
     return jsonify(cursor.fetchall())
 
+@app.route("/api/health")
+def health_check():
+    return {"status": "ok"}, 200
+
 @app.route("/api/students", methods=["POST"])
 def add_student():
     data = request.json
